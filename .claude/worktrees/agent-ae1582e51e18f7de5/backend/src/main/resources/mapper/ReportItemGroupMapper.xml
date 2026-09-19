@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.reportapp.reportappbackend.mapper.ReportItemGroupMapper">
+
+    <select id="findByStudentId" resultType="com.reportapp.reportappbackend.entity.ReportItemGroup">
+        SELECT rig.id, rig.student_id, rig.goal_id, rig.created_at, rig.updated_at
+        FROM report_item_groups rig
+        JOIN goals g ON g.id = rig.goal_id
+        WHERE rig.student_id = #{studentId}
+        ORDER BY g.start_date DESC
+    </select>
+
+    <select id="findById" resultType="com.reportapp.reportappbackend.entity.ReportItemGroup">
+        SELECT id, student_id, goal_id, created_at, updated_at
+        FROM report_item_groups
+        WHERE id = #{id}
+    </select>
+
+    <select id="findByGoalId" resultType="com.reportapp.reportappbackend.entity.ReportItemGroup">
+        SELECT id, student_id, goal_id, created_at, updated_at
+        FROM report_item_groups
+        WHERE goal_id = #{goalId}
+    </select>
+
+    <insert id="insert">
+        INSERT INTO report_item_groups (id, student_id, goal_id)
+        VALUES (#{id}, #{studentId}, #{goalId})
+    </insert>
+
+    <delete id="deleteById">
+        DELETE FROM report_item_groups
+        WHERE id = #{id}
+    </delete>
+
+</mapper>

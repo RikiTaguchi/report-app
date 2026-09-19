@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.reportapp.reportappbackend.mapper.DailyReportMapper">
+
+    <select id="findByStudentIdAndReportDate" resultType="com.reportapp.reportappbackend.entity.DailyReport">
+        SELECT id, student_id, report_date, submitted_at, free_text, created_at, updated_at
+        FROM daily_reports
+        WHERE student_id = #{studentId} AND report_date = #{reportDate}
+    </select>
+
+    <select id="findById" resultType="com.reportapp.reportappbackend.entity.DailyReport">
+        SELECT id, student_id, report_date, submitted_at, free_text, created_at, updated_at
+        FROM daily_reports
+        WHERE id = #{id}
+    </select>
+
+    <select id="findByStudentId" resultType="com.reportapp.reportappbackend.entity.DailyReport">
+        SELECT id, student_id, report_date, submitted_at, free_text, created_at, updated_at
+        FROM daily_reports
+        WHERE student_id = #{studentId}
+        ORDER BY report_date DESC
+    </select>
+
+    <select id="findSubmissionDatesByStudentId" resultType="java.time.LocalDate">
+        SELECT DISTINCT report_date
+        FROM daily_reports
+        WHERE student_id = #{studentId} AND submitted_at IS NOT NULL
+        ORDER BY report_date DESC
+    </select>
+
+    <insert id="insert">
+        INSERT INTO daily_reports (id, student_id, report_date, submitted_at)
+        VALUES (#{id}, #{studentId}, #{reportDate}, #{submittedAt})
+    </insert>
+
+    <update id="updateFreeText">
+        UPDATE daily_reports
+        SET free_text = #{freeText}
+        WHERE id = #{id}
+    </update>
+
+    <update id="markSubmitted">
+        UPDATE daily_reports
+        SET submitted_at = #{submittedAt}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM daily_reports
+        WHERE id = #{id}
+    </delete>
+
+</mapper>

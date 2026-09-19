@@ -1,0 +1,16 @@
+# OS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+
+# env files (backend/, frontend/ have their own; this covers the repo root)
+.env
+.env.local
+
+# Docker
+db_data/
+
+# uploaded files (local runtime data)
+backend/uploads/

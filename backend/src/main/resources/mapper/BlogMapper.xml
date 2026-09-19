@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.reportapp.reportappbackend.mapper.BlogMapper">
+
+    <select id="findById" resultType="com.reportapp.reportappbackend.entity.Blog">
+        SELECT id, teacher_id, title, content, created_at, updated_at
+        FROM blogs
+        WHERE id = #{id}
+    </select>
+
+    <select id="findByTeacherId" resultType="com.reportapp.reportappbackend.entity.Blog">
+        SELECT id, teacher_id, title, content, created_at, updated_at
+        FROM blogs
+        WHERE teacher_id = #{teacherId}
+        ORDER BY created_at DESC
+    </select>
+
+    <select id="findAll" resultType="com.reportapp.reportappbackend.entity.Blog">
+        SELECT id, teacher_id, title, content, created_at, updated_at
+        FROM blogs
+        ORDER BY created_at DESC
+    </select>
+
+    <insert id="insert">
+        INSERT INTO blogs (id, teacher_id, title, content)
+        VALUES (#{id}, #{teacherId}, #{title}, #{content})
+    </insert>
+
+    <update id="update">
+        UPDATE blogs
+        SET title = #{title}, content = #{content}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM blogs
+        WHERE id = #{id}
+    </delete>
+
+</mapper>

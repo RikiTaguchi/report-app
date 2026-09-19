@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.reportapp.reportappbackend.mapper.ReportItemDefinitionMapper">
+
+    <select id="findBySubtitleId" resultType="com.reportapp.reportappbackend.entity.ReportItemDefinition">
+        SELECT id, subtitle_id, item_type, label, display_order, created_at, updated_at
+        FROM report_item_definitions
+        WHERE subtitle_id = #{subtitleId}
+        ORDER BY display_order ASC
+    </select>
+
+    <select id="findByStudentId" resultType="com.reportapp.reportappbackend.entity.ReportItemDefinition">
+        SELECT rid.id, rid.subtitle_id, rid.item_type, rid.label, rid.display_order, rid.created_at, rid.updated_at
+        FROM report_item_definitions rid
+        JOIN report_item_subtitles rist ON rist.id = rid.subtitle_id
+        JOIN report_item_groups rig ON rig.id = rist.group_id
+        WHERE rig.student_id = #{studentId}
+    </select>
+
+    <select id="findApplicableByStudentIdAndDate" resultType="com.reportapp.reportappbackend.entity.ReportItemDefinition">
+        SELECT rid.id, rid.subtitle_id, rid.item_type, rid.label, rid.display_order, rid.created_at, rid.updated_at
+        FROM report_item_definitions rid
+        JOIN report_item_subtitles rist ON rist.id = rid.subtitle_id
+        JOIN report_item_groups rig ON rig.id = rist.group_id
+        JOIN goals g ON g.id = rig.goal_id
+        WHERE rig.student_id = #{studentId}
+          AND g.start_date &lt;= #{reportDate}
+          AND g.end_date &gt;= #{reportDate}
+        ORDER BY CASE rid.item_type WHEN 'CHECKBOX' THEN 0 ELSE 1 END, rist.display_order ASC, rid.display_order ASC
+    </select>
+
+    <select id="findById" resultType="com.reportapp.reportappbackend.entity.ReportItemDefinition">
+        SELECT id, subtitle_id, item_type, label, display_order, created_at, updated_at
+        FROM report_item_definitions
+        WHERE id = #{id}
+    </select>
+
+    <insert id="insert">
+        INSERT INTO report_item_definitions (id, subtitle_id, item_type, label, display_order)
+        VALUES (#{id}, #{subtitleId}, #{itemType}, #{label}, #{displayOrder})
+    </insert>
+
+    <update id="update">
+        UPDATE report_item_definitions
+        SET item_type = #{itemType}, label = #{label}
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateDisplayOrder">
+        UPDATE report_item_definitions
+        SET display_order = #{displayOrder}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM report_item_definitions
+        WHERE id = #{id}
+    </delete>
+
+    <select id="countResponsesByDefinitionId" resultType="int">
+        SELECT COUNT(*)
+        FROM report_item_responses
+        WHERE report_item_definition_id = #{definitionId}
+    </select>
+
+    <select id="findMaxDisplayOrder" resultType="int">
+        SELECT COALESCE(MAX(display_order), -1)
+        FROM report_item_definitions
+        WHERE subtitle_id = #{subtitleId} AND item_type = #{itemType}
+    </select>
+
+</mapper>

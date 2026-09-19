@@ -1,0 +1,7 @@
+package com.reportapp.reportappbackend.web.dto;
+
+import java.util.UUID;
+
+public record ReportItemResponseDTO(
+        UUID reportItemDefinitionId, String label, String itemType, Boolean checked, String textValue) {
+}

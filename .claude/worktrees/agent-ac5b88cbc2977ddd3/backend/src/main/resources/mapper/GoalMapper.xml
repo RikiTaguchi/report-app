@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.reportapp.reportappbackend.mapper.GoalMapper">
+
+    <select id="findById" resultType="com.reportapp.reportappbackend.entity.Goal">
+        SELECT id, student_id, teacher_id, title, description, start_date, end_date, created_at, updated_at
+        FROM goals
+        WHERE id = #{id}
+    </select>
+
+    <select id="findByStudentId" resultType="com.reportapp.reportappbackend.entity.Goal">
+        SELECT id, student_id, teacher_id, title, description, start_date, end_date, created_at, updated_at
+        FROM goals
+        WHERE student_id = #{studentId}
+        ORDER BY start_date DESC
+    </select>
+
+    <select id="existsOverlapping" resultType="boolean">
+        SELECT EXISTS (
+            SELECT 1 FROM goals
+            WHERE student_id = #{studentId}
+              AND start_date &lt;= #{endDate}
+              AND end_date &gt;= #{startDate}
+              <if test="excludeGoalId != null">
+                  AND id != #{excludeGoalId}
+              </if>
+        )
+    </select>
+
+    <select id="existsCoveringDate" resultType="boolean">
+        SELECT EXISTS (
+            SELECT 1 FROM goals
+            WHERE student_id = #{studentId}
+              AND start_date &lt;= #{date}
+              AND end_date &gt;= #{date}
+        )
+    </select>
+
+    <insert id="insert">
+        INSERT INTO goals (id, student_id, teacher_id, title, description, start_date, end_date)
+        VALUES (#{id}, #{studentId}, #{teacherId}, #{title}, #{description}, #{startDate}, #{endDate})
+    </insert>
+
+    <update id="update">
+        UPDATE goals
+        SET title = #{title}, description = #{description}, start_date = #{startDate}, end_date = #{endDate}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM goals
+        WHERE id = #{id}
+    </delete>
+
+</mapper>

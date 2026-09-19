@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.reportapp.reportappbackend.mapper.ReportItemSubtitleMapper">
+
+    <select id="findByGroupId" resultType="com.reportapp.reportappbackend.entity.ReportItemSubtitle">
+        SELECT id, group_id, label, display_order, created_at, updated_at
+        FROM report_item_subtitles
+        WHERE group_id = #{groupId}
+        ORDER BY display_order ASC
+    </select>
+
+    <select id="findByStudentId" resultType="com.reportapp.reportappbackend.entity.ReportItemSubtitle">
+        SELECT rist.id, rist.group_id, rist.label, rist.display_order, rist.created_at, rist.updated_at
+        FROM report_item_subtitles rist
+        JOIN report_item_groups rig ON rig.id = rist.group_id
+        WHERE rig.student_id = #{studentId}
+    </select>
+
+    <select id="findById" resultType="com.reportapp.reportappbackend.entity.ReportItemSubtitle">
+        SELECT id, group_id, label, display_order, created_at, updated_at
+        FROM report_item_subtitles
+        WHERE id = #{id}
+    </select>
+
+    <insert id="insert">
+        INSERT INTO report_item_subtitles (id, group_id, label, display_order)
+        VALUES (#{id}, #{groupId}, #{label}, #{displayOrder})
+    </insert>
+
+    <update id="update">
+        UPDATE report_item_subtitles
+        SET label = #{label}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM report_item_subtitles
+        WHERE id = #{id}
+    </delete>
+
+    <select id="findMaxDisplayOrder" resultType="int">
+        SELECT COALESCE(MAX(display_order), -1)
+        FROM report_item_subtitles
+        WHERE group_id = #{groupId}
+    </select>
+
+</mapper>

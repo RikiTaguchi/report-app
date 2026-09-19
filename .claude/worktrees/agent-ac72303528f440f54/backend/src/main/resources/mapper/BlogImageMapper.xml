@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.reportapp.reportappbackend.mapper.BlogImageMapper">
+
+    <select id="findById" resultType="com.reportapp.reportappbackend.entity.BlogImage">
+        SELECT id, blog_id, image_url, created_at, updated_at
+        FROM blog_images
+        WHERE id = #{id}
+    </select>
+
+    <select id="findByImageUrl" resultType="com.reportapp.reportappbackend.entity.BlogImage">
+        SELECT id, blog_id, image_url, created_at, updated_at
+        FROM blog_images
+        WHERE image_url = #{imageUrl}
+    </select>
+
+    <select id="findByBlogId" resultType="com.reportapp.reportappbackend.entity.BlogImage">
+        SELECT id, blog_id, image_url, created_at, updated_at
+        FROM blog_images
+        WHERE blog_id = #{blogId}
+        ORDER BY created_at ASC
+    </select>
+
+    <insert id="insert">
+        INSERT INTO blog_images (id, blog_id, image_url)
+        VALUES (#{id}, #{blogId}, #{imageUrl})
+    </insert>
+
+    <delete id="deleteById">
+        DELETE FROM blog_images
+        WHERE id = #{id}
+    </delete>
+
+    <delete id="deleteByBlogId">
+        DELETE FROM blog_images
+        WHERE blog_id = #{blogId}
+    </delete>
+
+</mapper>

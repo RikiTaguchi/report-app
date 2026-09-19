@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.reportapp.reportappbackend.mapper.StudentMapper">
+
+    <select id="findByUsername" resultType="com.reportapp.reportappbackend.entity.Student">
+        SELECT id, username, password_hash, last_name, first_name, teacher_id, profile_image_url, created_at, updated_at
+        FROM students
+        WHERE username = #{username}
+    </select>
+
+    <select id="findById" resultType="com.reportapp.reportappbackend.entity.Student">
+        SELECT id, username, password_hash, last_name, first_name, teacher_id, profile_image_url, created_at, updated_at
+        FROM students
+        WHERE id = #{id}
+    </select>
+
+    <select id="findAll" resultType="com.reportapp.reportappbackend.entity.Student">
+        SELECT id, username, password_hash, last_name, first_name, teacher_id, profile_image_url, created_at, updated_at
+        FROM students
+        ORDER BY created_at ASC
+    </select>
+
+    <select id="findByTeacherId" resultType="com.reportapp.reportappbackend.entity.Student">
+        SELECT id, username, password_hash, last_name, first_name, teacher_id, profile_image_url, created_at, updated_at
+        FROM students
+        WHERE teacher_id = #{teacherId}
+        ORDER BY created_at ASC
+    </select>
+
+    <select id="findByProfileImageUrl" resultType="com.reportapp.reportappbackend.entity.Student">
+        SELECT id, username, password_hash, last_name, first_name, teacher_id, profile_image_url, created_at, updated_at
+        FROM students
+        WHERE profile_image_url = #{profileImageUrl}
+    </select>
+
+    <select id="existsByUsername" resultType="boolean">
+        SELECT EXISTS(SELECT 1 FROM students WHERE username = #{username})
+    </select>
+
+    <insert id="insert">
+        INSERT INTO students (id, username, password_hash, last_name, first_name, teacher_id)
+        VALUES (#{id}, #{username}, #{passwordHash}, #{lastName}, #{firstName}, #{teacherId})
+    </insert>
+
+    <update id="update">
+        UPDATE students
+        SET last_name = #{lastName}, first_name = #{firstName}, teacher_id = #{teacherId}
+        WHERE id = #{id}
+    </update>
+
+    <update id="updatePasswordHash">
+        UPDATE students
+        SET password_hash = #{passwordHash}
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateProfileImageUrl">
+        UPDATE students
+        SET profile_image_url = #{profileImageUrl}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM students
+        WHERE id = #{id}
+    </delete>
+
+</mapper>

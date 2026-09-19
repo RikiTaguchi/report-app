@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.reportapp.reportappbackend.mapper.ReportItemResponseMapper">
+
+    <select id="findByDailyReportId" resultType="com.reportapp.reportappbackend.entity.ReportItemResponse">
+        SELECT rir.id, rir.daily_report_id, rir.report_item_definition_id, rir.checked, rir.created_at, rir.updated_at
+        FROM report_item_responses rir
+        LEFT JOIN report_item_definitions rid ON rid.id = rir.report_item_definition_id
+        LEFT JOIN report_item_subtitles ris ON ris.id = rid.subtitle_id
+        WHERE rir.daily_report_id = #{dailyReportId}
+        ORDER BY ris.display_order ASC NULLS LAST, rid.display_order ASC NULLS LAST, rir.created_at ASC
+    </select>
+
+    <delete id="deleteByDailyReportId">
+        DELETE FROM report_item_responses
+        WHERE daily_report_id = #{dailyReportId}
+    </delete>
+
+    <insert id="insertBatch">
+        INSERT INTO report_item_responses (id, daily_report_id, report_item_definition_id, checked)
+        VALUES
+        <foreach collection="items" item="item" separator=",">
+            (#{item.id}, #{item.dailyReportId}, #{item.reportItemDefinitionId}, #{item.checked})
+        </foreach>
+    </insert>
+
+</mapper>

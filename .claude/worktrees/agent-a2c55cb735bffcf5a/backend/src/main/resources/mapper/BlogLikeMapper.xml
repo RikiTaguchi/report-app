@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.reportapp.reportappbackend.mapper.BlogLikeMapper">
+
+    <select id="findByBlogIdAndLiker" resultType="com.reportapp.reportappbackend.entity.BlogLike">
+        SELECT id, blog_id, liker_type, liker_id, created_at, updated_at
+        FROM blog_likes
+        WHERE blog_id = #{blogId} AND liker_type = #{likerType} AND liker_id = #{likerId}
+    </select>
+
+    <select id="countByBlogId" resultType="int">
+        SELECT COUNT(*)
+        FROM blog_likes
+        WHERE blog_id = #{blogId}
+    </select>
+
+    <insert id="insert">
+        INSERT INTO blog_likes (id, blog_id, liker_type, liker_id)
+        VALUES (#{id}, #{blogId}, #{likerType}, #{likerId})
+    </insert>
+
+    <delete id="deleteByBlogIdAndLiker">
+        DELETE FROM blog_likes
+        WHERE blog_id = #{blogId} AND liker_type = #{likerType} AND liker_id = #{likerId}
+    </delete>
+
+    <delete id="deleteByBlogId">
+        DELETE FROM blog_likes
+        WHERE blog_id = #{blogId}
+    </delete>
+
+</mapper>

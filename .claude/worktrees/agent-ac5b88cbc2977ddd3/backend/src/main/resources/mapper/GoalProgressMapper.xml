@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.reportapp.reportappbackend.mapper.GoalProgressMapper">
+
+    <select id="findById" resultType="com.reportapp.reportappbackend.entity.GoalProgress">
+        SELECT id, goal_id, progress_percent, comment, recorded_date, created_at, updated_at
+        FROM goal_progresses
+        WHERE id = #{id}
+    </select>
+
+    <select id="findByGoalId" resultType="com.reportapp.reportappbackend.entity.GoalProgress">
+        SELECT id, goal_id, progress_percent, comment, recorded_date, created_at, updated_at
+        FROM goal_progresses
+        WHERE goal_id = #{goalId}
+        ORDER BY recorded_date ASC
+    </select>
+
+    <select id="findLatestByGoalId" resultType="com.reportapp.reportappbackend.entity.GoalProgress">
+        SELECT id, goal_id, progress_percent, comment, recorded_date, created_at, updated_at
+        FROM goal_progresses
+        WHERE goal_id = #{goalId}
+        ORDER BY recorded_date DESC, created_at DESC
+        LIMIT 1
+    </select>
+
+    <insert id="insert">
+        INSERT INTO goal_progresses (id, goal_id, progress_percent, comment, recorded_date)
+        VALUES (#{id}, #{goalId}, #{progressPercent}, #{comment}, #{recordedDate})
+    </insert>
+
+    <update id="update">
+        UPDATE goal_progresses
+        SET progress_percent = #{progressPercent}, comment = #{comment}, recorded_date = #{recordedDate}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM goal_progresses
+        WHERE id = #{id}
+    </delete>
+
+    <delete id="deleteByGoalId">
+        DELETE FROM goal_progresses
+        WHERE goal_id = #{goalId}
+    </delete>
+
+</mapper>

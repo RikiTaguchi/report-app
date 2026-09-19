@@ -87,7 +87,7 @@ public class SecurityConfig {
         return source;
     }
 
-    static List<String> parseOrigins(String allowedOrigins) {
+    public static List<String> parseOrigins(String allowedOrigins) {
         return Arrays.stream(allowedOrigins.split(","))
                 .map(String::trim)
                 .filter(origin -> !origin.isEmpty())

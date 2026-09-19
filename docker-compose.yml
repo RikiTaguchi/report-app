@@ -1,16 +1,15 @@
 services:
+
   backend:
     build: ./backend
     environment:
-      # Xserver 上に作成した DB 情報
-      SPRING_DATASOURCE_URL: jdbc:postgresql://172.16.1.162:5432/${DB_NAME}
-      SPRING_DATASOURCE_USERNAME: ${DB_USER}
-      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
-      APP_CORS_ALLOWED_ORIGINS: https://meikoreport.com
+      SPRING_DATASOURCE_URL: jdbc:postgresql://172.16.1.162:5432/report_app_db # ←実際のDB名に合わせてください
+      SPRING_DATASOURCE_USERNAME: あなたのDBユーザー名
+      SPRING_DATASOURCE_PASSWORD: あなたのDBパスワード
+      # ↓↓↓【ここを追記します】↓↓↓
+      APP_CORS_ALLOWED_ORIGINS: https://meikoreport.com,https://www.meikoreport.com
     ports:
       - "8080:8080"
-    volumes:
-      - uploads:/app/uploads
     restart: always
 
   frontend:

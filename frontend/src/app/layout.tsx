@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+// ↓追加：AuthContextからAuthProviderをインポート
+import { AuthProvider } from "@/context/AuthContext";
 
 export const metadata: Metadata = {
   title: "Report App",
@@ -13,9 +15,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja">
-      {/* classNameからフォントの変数を削除し、シンプルなbodyにしています */}
       <body>
-        {children}
+        {/* ↓追加：children を AuthProvider で包む */}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

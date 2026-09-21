@@ -35,7 +35,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="admin-app">
       <ToastProvider>
-        <AppHeader brand="管理者コンソール" items={ITEMS} userLabel={user.name} logoutHref="/login/admin" />
+        <AppHeader brand="管理者コンソール" items={ITEMS} userLabel={user.name} logoutHref="/admin/login" />
         <div className="app-body">{children}</div>
       </ToastProvider>
     </div>

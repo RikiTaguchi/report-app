@@ -32,7 +32,7 @@ export default function StudentLayout({ children }: { children: React.ReactNode 
   return (
     <div className="ig-force-mobile">
       <ToastProvider>
-        <AppHeader brand="Instagram" items={ITEMS} userLabel={`${user.name} さん`} logoutHref="/login/student" />
+        <AppHeader brand="Instagram" items={ITEMS} userLabel={`${user.name} さん`} logoutHref="/student/login" />
         <div className="app-body">{children}</div>
       </ToastProvider>
     </div>

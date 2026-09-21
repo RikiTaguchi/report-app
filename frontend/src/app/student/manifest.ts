@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     id: "/student-app",
     name: "レポートApp 生徒",
     short_name: "レポートApp",
-    start_url: "/student",
+    start_url: "/login/student",
     scope: "/",
     display: "standalone",
     background_color: "#ffffff",

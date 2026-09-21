@@ -104,9 +104,24 @@ public class FileController {
     private ResponseEntity<Resource> serve(String filename) {
         return fileStorageService
                 .loadAsResource(filename)
-                .map(resource -> ResponseEntity.ok()
-                        .contentType(MediaTypeFactory.getMediaType(resource).orElse(MediaType.APPLICATION_OCTET_STREAM))
-                        .body(resource))
+                .map(resource -> {
+                    String lowerFilename = filename.toLowerCase();
+
+                    MediaType mediaType;
+                    if (lowerFilename.endsWith(".heic")) {
+                        mediaType = MediaType.parseMediaType("image/heic");
+                    } else if (lowerFilename.endsWith(".heif")) {
+                        mediaType = MediaType.parseMediaType("image/heif");
+                    } else {
+                        mediaType = MediaTypeFactory
+                                .getMediaType(resource)
+                                .orElse(MediaType.APPLICATION_OCTET_STREAM);
+                    }
+
+                    return ResponseEntity.ok()
+                            .contentType(mediaType)
+                            .body(resource);
+                })
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

@@ -254,27 +254,22 @@ export function TeacherReportCard({ report }: { report: TeacherReportFeedItem })
            )}
 
            {detail && detail.items.length > 0 && (
-             <div>
-               <div className="ig-section-label">項目</div>
-               <div className="stack-sm" style={{ paddingLeft: 14 }}>
-                 {groupItemsBySubtitle(detail.items).map((group) => (
-                   <div key={group.key}>
-                     {group.subtitleLabel && (
-                       <div className="ig-section-label" style={{ fontSize: "0.75rem" }}>
-                         {group.subtitleLabel}
+             <div className="stack-sm">
+               {groupItemsBySubtitle(detail.items).map((group) => (
+                 <div key={group.key}>
+                   {group.subtitleLabel && (
+                     <div className="ig-section-label">{group.subtitleLabel}</div>
+                   )}
+                   <div className="stack-sm" style={{ paddingLeft: 14 }}>
+                     {group.items.map((item) => (
+                       <div className="checkbox-row" key={item.reportItemDefinitionId}>
+                         <input type="checkbox" className="ig-checkbox" checked={item.checked ?? false} disabled readOnly />
+                         <span style={{ fontSize: "0.8rem" }}>{item.label}</span>
                        </div>
-                     )}
-                     <div className="stack-sm">
-                       {group.items.map((item) => (
-                         <div className="checkbox-row" key={item.reportItemDefinitionId}>
-                           <input type="checkbox" className="ig-checkbox" checked={item.checked ?? false} disabled readOnly />
-                           <span style={{ fontSize: "0.8rem" }}>{item.label}</span>
-                         </div>
-                       ))}
-                     </div>
+                     ))}
                    </div>
-                 ))}
-               </div>
+                 </div>
+               ))}
              </div>
            )}
 

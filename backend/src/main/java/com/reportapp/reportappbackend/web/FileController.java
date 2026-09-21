@@ -94,20 +94,11 @@ public class FileController {
     }
 
     private boolean isStudentProfileImageVisibleTo(Student student, AppUserPrincipal principal) {
-        return switch (principal.getRole()) {
-            case "ADMIN" -> true;
-            case "STUDENT" -> student.getId().equals(principal.getId());
-            case "TEACHER" -> student.getTeacherId().equals(principal.getId());
-            default -> false;
-        };
+        return principal != null;
     }
 
     private boolean isTeacherProfileImageVisibleTo(Teacher teacher, AppUserPrincipal principal) {
-        return switch (principal.getRole()) {
-            case "ADMIN", "STUDENT" -> true;
-            case "TEACHER" -> teacher.getId().equals(principal.getId());
-            default -> false;
-        };
+        return principal != null;
     }
 
     private ResponseEntity<Resource> serve(String filename) {

@@ -6,7 +6,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "レポートApp 管理者",
     short_name: "レポートApp",
     start_url: "/admin/login",
-    scope: "/admin",
+    scope: "/admin/",
     display: "standalone",
     background_color: "#ffffff",
     theme_color: "#ffffff",

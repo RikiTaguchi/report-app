@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { AppHeader, type NavItem } from "@/components/AppHeader";
 import { HomeIcon, DocumentIcon, ChatIcon, GearIcon } from "@/components/icons";
@@ -14,16 +14,28 @@ const ITEMS: NavItem[] = [
   { href: "/student/settings", label: "設定", icon: GearIcon },
 ];
 
-export default function StudentLayout({ children }: { children: React.ReactNode }) {
+export default function StudentLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
+
+  const isLoginPage = pathname === "/student/login";
 
   useEffect(() => {
-    if (loading) return;
+    if (isLoginPage || loading) return;
+
     if (!user || user.role !== "STUDENT") {
-      router.replace("/login/student");
+      router.replace("/student/login");
     }
-  }, [loading, user, router]);
+  }, [isLoginPage, loading, user, router]);
+
+  if (isLoginPage) {
+    return <>{children}</>;
+  }
 
   if (loading || !user || user.role !== "STUDENT") {
     return <div className="spinner-page">読み込み中...</div>;
@@ -32,7 +44,12 @@ export default function StudentLayout({ children }: { children: React.ReactNode 
   return (
     <div className="ig-force-mobile">
       <ToastProvider>
-        <AppHeader brand="Instagram" items={ITEMS} userLabel={`${user.name} さん`} logoutHref="/student/login" />
+        <AppHeader
+          brand="Instagram"
+          items={ITEMS}
+          userLabel={`${user.name} さん`}
+          logoutHref="/student/login"
+        />
         <div className="app-body">{children}</div>
       </ToastProvider>
     </div>

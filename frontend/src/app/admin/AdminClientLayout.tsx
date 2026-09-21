@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { AppHeader, type NavItem } from "@/components/AppHeader";
 import { HomeIcon, UsersIcon, DocumentIcon } from "@/components/icons";
@@ -13,16 +13,30 @@ const ITEMS: NavItem[] = [
   { href: "/admin/students", label: "生徒管理", icon: DocumentIcon },
 ];
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default function AdminClientLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
+
+  const isLoginPage = pathname === "/admin/login";
 
   useEffect(() => {
-    if (loading) return;
+    // ログイン画面では認証チェックをしない
+    if (isLoginPage || loading) return;
+
     if (!user || user.role !== "ADMIN") {
-      router.replace("/login/admin");
+      router.replace("/admin/login");
     }
-  }, [loading, user, router]);
+  }, [isLoginPage, loading, user, router]);
+
+  // ログイン画面はそのまま表示
+  if (isLoginPage) {
+    return <>{children}</>;
+  }
 
   if (loading || !user || user.role !== "ADMIN") {
     return (
@@ -35,7 +49,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="admin-app">
       <ToastProvider>
-        <AppHeader brand="管理者コンソール" items={ITEMS} userLabel={user.name} logoutHref="/admin/login" />
+        <AppHeader
+          brand="管理者コンソール"
+          items={ITEMS}
+          userLabel={user.name}
+          logoutHref="/admin/login"
+        />
         <div className="app-body">{children}</div>
       </ToastProvider>
     </div>

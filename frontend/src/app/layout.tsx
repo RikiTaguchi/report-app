@@ -4,8 +4,8 @@ import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 
 export const metadata: Metadata = {
-  title: "Report App",
-  description: "Report Application",
+  title: "レポートApp",
+  description: "明光義塾レポート管理システム",
 };
 
 export const viewport: Viewport = {

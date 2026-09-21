@@ -2,5 +2,10 @@ package com.reportapp.reportappbackend.web.dto;
 
 import java.util.UUID;
 
-public record ReportItemResponseDTO(UUID reportItemDefinitionId, String label, Boolean checked) {
+public record ReportItemResponseDTO(
+    UUID reportItemDefinitionId,
+    String label,
+    Boolean checked,
+    UUID subtitleId,
+    String subtitleLabel) {
 }

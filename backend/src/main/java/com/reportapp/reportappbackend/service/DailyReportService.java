@@ -4,6 +4,7 @@ import com.reportapp.reportappbackend.entity.DailyReport;
 import com.reportapp.reportappbackend.entity.ReportImage;
 import com.reportapp.reportappbackend.entity.ReportItemDefinition;
 import com.reportapp.reportappbackend.entity.ReportItemResponse;
+import com.reportapp.reportappbackend.entity.ReportItemSubtitle;
 import com.reportapp.reportappbackend.entity.Student;
 import com.reportapp.reportappbackend.entity.StudyTimeRecord;
 import com.reportapp.reportappbackend.entity.Subject;
@@ -12,6 +13,7 @@ import com.reportapp.reportappbackend.mapper.GoalMapper;
 import com.reportapp.reportappbackend.mapper.ReportImageMapper;
 import com.reportapp.reportappbackend.mapper.ReportItemDefinitionMapper;
 import com.reportapp.reportappbackend.mapper.ReportItemResponseMapper;
+import com.reportapp.reportappbackend.mapper.ReportItemSubtitleMapper;
 import com.reportapp.reportappbackend.mapper.StudentMapper;
 import com.reportapp.reportappbackend.mapper.StudyTimeRecordMapper;
 import com.reportapp.reportappbackend.mapper.SubjectMapper;
@@ -39,239 +41,248 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class DailyReportService {
 
-    private final DailyReportMapper dailyReportMapper;
-    private final GoalMapper goalMapper;
-    private final ReportItemResponseMapper reportItemResponseMapper;
-    private final StudyTimeRecordMapper studyTimeRecordMapper;
-    private final ReportItemDefinitionMapper reportItemDefinitionMapper;
-    private final ReportImageMapper reportImageMapper;
-    private final SubjectMapper subjectMapper;
-    private final StudentMapper studentMapper;
-    private final FileStorageService fileStorageService;
-    private final SimpMessagingTemplate messagingTemplate;
+   private final DailyReportMapper dailyReportMapper;
+   private final GoalMapper goalMapper;
+   private final ReportItemResponseMapper reportItemResponseMapper;
+   private final StudyTimeRecordMapper studyTimeRecordMapper;
+   private final ReportItemDefinitionMapper reportItemDefinitionMapper;
+   private final ReportItemSubtitleMapper reportItemSubtitleMapper;
+   private final ReportImageMapper reportImageMapper;
+   private final SubjectMapper subjectMapper;
+   private final StudentMapper studentMapper;
+   private final FileStorageService fileStorageService;
+   private final SimpMessagingTemplate messagingTemplate;
 
-    public DailyReportService(
-            DailyReportMapper dailyReportMapper,
-            GoalMapper goalMapper,
-            ReportItemResponseMapper reportItemResponseMapper,
-            StudyTimeRecordMapper studyTimeRecordMapper,
-            ReportItemDefinitionMapper reportItemDefinitionMapper,
-            ReportImageMapper reportImageMapper,
-            SubjectMapper subjectMapper,
-            StudentMapper studentMapper,
-            FileStorageService fileStorageService,
-            SimpMessagingTemplate messagingTemplate) {
-        this.dailyReportMapper = dailyReportMapper;
-        this.goalMapper = goalMapper;
-        this.reportItemResponseMapper = reportItemResponseMapper;
-        this.studyTimeRecordMapper = studyTimeRecordMapper;
-        this.reportItemDefinitionMapper = reportItemDefinitionMapper;
-        this.reportImageMapper = reportImageMapper;
-        this.subjectMapper = subjectMapper;
-        this.studentMapper = studentMapper;
-        this.fileStorageService = fileStorageService;
-        this.messagingTemplate = messagingTemplate;
-    }
+   public DailyReportService(
+           DailyReportMapper dailyReportMapper,
+           GoalMapper goalMapper,
+           ReportItemResponseMapper reportItemResponseMapper,
+           StudyTimeRecordMapper studyTimeRecordMapper,
+           ReportItemDefinitionMapper reportItemDefinitionMapper,
+           ReportItemSubtitleMapper reportItemSubtitleMapper,
+           ReportImageMapper reportImageMapper,
+           SubjectMapper subjectMapper,
+           StudentMapper studentMapper,
+           FileStorageService fileStorageService,
+           SimpMessagingTemplate messagingTemplate) {
+       this.dailyReportMapper = dailyReportMapper;
+       this.goalMapper = goalMapper;
+       this.reportItemResponseMapper = reportItemResponseMapper;
+       this.studyTimeRecordMapper = studyTimeRecordMapper;
+       this.reportItemDefinitionMapper = reportItemDefinitionMapper;
+       this.reportItemSubtitleMapper = reportItemSubtitleMapper;
+       this.reportImageMapper = reportImageMapper;
+       this.subjectMapper = subjectMapper;
+       this.studentMapper = studentMapper;
+       this.fileStorageService = fileStorageService;
+       this.messagingTemplate = messagingTemplate;
+   }
 
-    @Transactional
-    public DailyReportDetailResponse saveReport(
-            UUID studentId, LocalDate reportDate, DailyReportSubmitRequest request) {
-        return saveReport(studentId, reportDate, request, false);
-    }
+   @Transactional
+   public DailyReportDetailResponse saveReport(
+           UUID studentId, LocalDate reportDate, DailyReportSubmitRequest request) {
+       return saveReport(studentId, reportDate, request, false);
+   }
 
-    @Transactional
-    public DailyReportDetailResponse saveReport(
-            UUID studentId, LocalDate reportDate, DailyReportSubmitRequest request, boolean createOnly) {
-        List<DailyReportSubmitRequest.ItemRequest> items =
-                request.items() == null ? List.of() : request.items();
-        List<DailyReportSubmitRequest.StudyTimeRequest> studyTimes =
-                request.studyTimes() == null ? List.of() : request.studyTimes();
+   @Transactional
+   public DailyReportDetailResponse saveReport(
+           UUID studentId, LocalDate reportDate, DailyReportSubmitRequest request, boolean createOnly) {
+       List<DailyReportSubmitRequest.ItemRequest> items =
+               request.items() == null ? List.of() : request.items();
+       List<DailyReportSubmitRequest.StudyTimeRequest> studyTimes =
+               request.studyTimes() == null ? List.of() : request.studyTimes();
 
-        Set<UUID> validDefinitionIds = reportItemDefinitionMapper
-                .findApplicableByStudentIdAndDate(studentId, reportDate)
-                .stream()
-                .map(ReportItemDefinition::getId)
-                .collect(Collectors.toSet());
-        Set<UUID> validSubjectIds =
-                subjectMapper.findAll().stream().map(Subject::getId).collect(Collectors.toSet());
+       Set<UUID> validDefinitionIds = reportItemDefinitionMapper
+               .findApplicableByStudentIdAndDate(studentId, reportDate)
+               .stream()
+               .map(ReportItemDefinition::getId)
+               .collect(Collectors.toSet());
+       Set<UUID> validSubjectIds =
+               subjectMapper.findAll().stream().map(Subject::getId).collect(Collectors.toSet());
 
-        Set<UUID> seenDefinitionIds = new HashSet<>();
-        for (DailyReportSubmitRequest.ItemRequest item : items) {
-            if (!validDefinitionIds.contains(item.reportItemDefinitionId())) {
-                throw new IllegalArgumentException("不正なreportItemDefinitionIdが含まれています");
-            }
-            if (!seenDefinitionIds.add(item.reportItemDefinitionId())) {
-                throw new IllegalArgumentException("reportItemDefinitionIdが重複しています");
-            }
-        }
-        Set<UUID> seenSubjectIds = new HashSet<>();
-        for (DailyReportSubmitRequest.StudyTimeRequest studyTime : studyTimes) {
-            if (!validSubjectIds.contains(studyTime.subjectId())) {
-                throw new IllegalArgumentException("不正なsubjectIdが含まれています");
-            }
-            if (!seenSubjectIds.add(studyTime.subjectId())) {
-                throw new IllegalArgumentException("subjectIdが重複しています");
-            }
-        }
+       Set<UUID> seenDefinitionIds = new HashSet<>();
+       for (DailyReportSubmitRequest.ItemRequest item : items) {
+           if (!validDefinitionIds.contains(item.reportItemDefinitionId())) {
+               throw new IllegalArgumentException("不正なreportItemDefinitionIdが含まれています");
+           }
+           if (!seenDefinitionIds.add(item.reportItemDefinitionId())) {
+               throw new IllegalArgumentException("reportItemDefinitionIdが重複しています");
+           }
+       }
+       Set<UUID> seenSubjectIds = new HashSet<>();
+       for (DailyReportSubmitRequest.StudyTimeRequest studyTime : studyTimes) {
+           if (!validSubjectIds.contains(studyTime.subjectId())) {
+               throw new IllegalArgumentException("不正なsubjectIdが含まれています");
+           }
+           if (!seenSubjectIds.add(studyTime.subjectId())) {
+               throw new IllegalArgumentException("subjectIdが重複しています");
+           }
+       }
 
-        DailyReport report = dailyReportMapper
-                .findByStudentIdAndReportDate(studentId, reportDate)
-                .orElse(null);
-        // 画像アップロード時に自動作成される未提出のレポート行は、提出処理においては
-        // 「まだ存在しない」ものとして扱う（submittedAtの有無のみが提出済みかどうかの基準）。
-        boolean isSubmitted = report != null && report.getSubmittedAt() != null;
-        if (createOnly && isSubmitted) {
-            throw new IllegalArgumentException("この日付のレポートは既に提出済みです");
-        }
-        boolean isNewSubmission = !isSubmitted;
-        if (isNewSubmission) {
-            LocalDate today = LocalDate.now(ZoneId.of("Asia/Tokyo"));
-            if (reportDate.isAfter(today)) {
-                throw new IllegalArgumentException("未来の日付のレポートは提出できません");
-            }
-            if (!goalMapper.existsCoveringDate(studentId, reportDate)) {
-                throw new IllegalArgumentException("この日付を含む期間の目標が設定されていないため、レポートを提出できません");
-            }
+       DailyReport report = dailyReportMapper
+               .findByStudentIdAndReportDate(studentId, reportDate)
+               .orElse(null);
+       // 画像アップロード時に自動作成される未提出のレポート行は、提出処理においては
+       // 「まだ存在しない」ものとして扱う（submittedAtの有無のみが提出済みかどうかの基準）。
+       boolean isSubmitted = report != null && report.getSubmittedAt() != null;
+       if (createOnly && isSubmitted) {
+           throw new IllegalArgumentException("この日付のレポートは既に提出済みです");
+       }
+       boolean isNewSubmission = !isSubmitted;
+       if (isNewSubmission) {
+           LocalDate today = LocalDate.now(ZoneId.of("Asia/Tokyo"));
+           if (reportDate.isAfter(today)) {
+               throw new IllegalArgumentException("未来の日付のレポートは提出できません");
+           }
+           if (!goalMapper.existsCoveringDate(studentId, reportDate)) {
+               throw new IllegalArgumentException("この日付を含む期間の目標が設定されていないため、レポートを提出できません");
+           }
 
-            LocalDateTime submittedAt = LocalDateTime.now(ZoneId.of("Asia/Tokyo"));
-            if (report == null) {
-                report = new DailyReport();
-                report.setId(UUID.randomUUID());
-                report.setStudentId(studentId);
-                report.setReportDate(reportDate);
-                report.setSubmittedAt(submittedAt);
-                dailyReportMapper.insert(report);
-            } else {
-                dailyReportMapper.markSubmitted(report.getId(), submittedAt);
-                report.setSubmittedAt(submittedAt);
-            }
+           LocalDateTime submittedAt = LocalDateTime.now(ZoneId.of("Asia/Tokyo"));
+           if (report == null) {
+               report = new DailyReport();
+               report.setId(UUID.randomUUID());
+               report.setStudentId(studentId);
+               report.setReportDate(reportDate);
+               report.setSubmittedAt(submittedAt);
+               dailyReportMapper.insert(report);
+           } else {
+               dailyReportMapper.markSubmitted(report.getId(), submittedAt);
+               report.setSubmittedAt(submittedAt);
+           }
 
-            Student student = studentMapper.findById(studentId).orElseThrow();
-            messagingTemplate.convertAndSend(
-                    RealtimeTopics.REPORT_SUBMISSIONS,
-                    new ReportSubmittedEvent(
-                            studentId, student.getName(), student.getTeacherId(), reportDate, submittedAt));
-        }
+           Student student = studentMapper.findById(studentId).orElseThrow();
+           messagingTemplate.convertAndSend(
+                   RealtimeTopics.REPORT_SUBMISSIONS,
+                   new ReportSubmittedEvent(
+                           studentId, student.getName(), student.getTeacherId(), reportDate, submittedAt));
+       }
 
-        UUID dailyReportId = report.getId();
-        dailyReportMapper.updateFreeText(dailyReportId, request.freeText());
-        reportItemResponseMapper.deleteByDailyReportId(dailyReportId);
-        studyTimeRecordMapper.deleteByDailyReportId(dailyReportId);
+       UUID dailyReportId = report.getId();
+       dailyReportMapper.updateFreeText(dailyReportId, request.freeText());
+       reportItemResponseMapper.deleteByDailyReportId(dailyReportId);
+       studyTimeRecordMapper.deleteByDailyReportId(dailyReportId);
 
-        if (!items.isEmpty()) {
-            List<ReportItemResponse> responseEntities = items.stream()
-                    .map(item -> {
-                        ReportItemResponse response = new ReportItemResponse();
-                        response.setId(UUID.randomUUID());
-                        response.setDailyReportId(dailyReportId);
-                        response.setReportItemDefinitionId(item.reportItemDefinitionId());
-                        response.setChecked(item.checked());
-                        return response;
-                    })
-                    .toList();
-            reportItemResponseMapper.insertBatch(responseEntities);
-        }
+       if (!items.isEmpty()) {
+           List<ReportItemResponse> responseEntities = items.stream()
+                   .map(item -> {
+                       ReportItemResponse response = new ReportItemResponse();
+                       response.setId(UUID.randomUUID());
+                       response.setDailyReportId(dailyReportId);
+                       response.setReportItemDefinitionId(item.reportItemDefinitionId());
+                       response.setChecked(item.checked());
+                       return response;
+                   })
+                   .toList();
+           reportItemResponseMapper.insertBatch(responseEntities);
+       }
 
-        if (!studyTimes.isEmpty()) {
-            List<StudyTimeRecord> recordEntities = studyTimes.stream()
-                    .map(studyTime -> {
-                        StudyTimeRecord record = new StudyTimeRecord();
-                        record.setId(UUID.randomUUID());
-                        record.setDailyReportId(dailyReportId);
-                        record.setSubjectId(studyTime.subjectId());
-                        record.setMinutes(studyTime.minutes());
-                        return record;
-                    })
-                    .toList();
-            studyTimeRecordMapper.insertBatch(recordEntities);
-        }
+       if (!studyTimes.isEmpty()) {
+           List<StudyTimeRecord> recordEntities = studyTimes.stream()
+                   .map(studyTime -> {
+                       StudyTimeRecord record = new StudyTimeRecord();
+                       record.setId(UUID.randomUUID());
+                       record.setDailyReportId(dailyReportId);
+                       record.setSubjectId(studyTime.subjectId());
+                       record.setMinutes(studyTime.minutes());
+                       return record;
+                   })
+                   .toList();
+           studyTimeRecordMapper.insertBatch(recordEntities);
+       }
 
-        return getReport(studentId, reportDate).orElseThrow();
-    }
+       return getReport(studentId, reportDate).orElseThrow();
+   }
 
-    public Optional<DailyReportDetailResponse> getReport(UUID studentId, LocalDate reportDate) {
-        return dailyReportMapper
-                .findByStudentIdAndReportDate(studentId, reportDate)
-                .map(report -> toDetailResponse(report, studentId));
-    }
+   public Optional<DailyReportDetailResponse> getReport(UUID studentId, LocalDate reportDate) {
+       return dailyReportMapper
+               .findByStudentIdAndReportDate(studentId, reportDate)
+               .map(report -> toDetailResponse(report, studentId));
+   }
 
-    public Optional<DailyReportDetailResponse> getReportForTeacher(UUID studentId, LocalDate reportDate) {
-        return dailyReportMapper
-                .findByStudentIdAndReportDate(studentId, reportDate)
-                .filter(report -> report.getSubmittedAt() != null)
-                .map(report -> toDetailResponse(report, studentId));
-    }
+   public Optional<DailyReportDetailResponse> getReportForTeacher(UUID studentId, LocalDate reportDate) {
+       return dailyReportMapper
+               .findByStudentIdAndReportDate(studentId, reportDate)
+               .filter(report -> report.getSubmittedAt() != null)
+               .map(report -> toDetailResponse(report, studentId));
+   }
 
-    public List<DailyReportListItemResponse> listReports(UUID studentId) {
-        return dailyReportMapper.findByStudentId(studentId).stream()
-                .map(report -> new DailyReportListItemResponse(
-                        report.getId(), report.getReportDate(), report.getSubmittedAt()))
-                .toList();
-    }
+   public List<DailyReportListItemResponse> listReports(UUID studentId) {
+       return dailyReportMapper.findByStudentId(studentId).stream()
+               .map(report -> new DailyReportListItemResponse(
+                       report.getId(), report.getReportDate(), report.getSubmittedAt()))
+               .toList();
+   }
 
-    public boolean isReportVisibleTo(UUID dailyReportId, String role, UUID actorId) {
-        return dailyReportMapper
-                .findById(dailyReportId)
-                .map(report -> switch (role) {
-                    case "ADMIN" -> true;
-                    case "STUDENT" -> report.getStudentId().equals(actorId);
-                    case "TEACHER" -> report.getSubmittedAt() != null;
-                    default -> false;
-                })
-                .orElse(false);
-    }
+   public boolean isReportVisibleTo(UUID dailyReportId, String role, UUID actorId) {
+       return dailyReportMapper
+               .findById(dailyReportId)
+               .map(report -> switch (role) {
+                   case "ADMIN" -> true;
+                   case "STUDENT" -> report.getStudentId().equals(actorId);
+                   case "TEACHER" -> report.getSubmittedAt() != null;
+                   default -> false;
+               })
+               .orElse(false);
+   }
 
-    @Transactional
-    public void deleteReport(UUID studentId, LocalDate reportDate) {
-        DailyReport report = dailyReportMapper
-                .findByStudentIdAndReportDate(studentId, reportDate)
-                .orElseThrow(() -> new IllegalArgumentException("日報が見つかりません"));
-        for (ReportImage image : reportImageMapper.findByDailyReportId(report.getId())) {
-            fileStorageService.deleteFile(image.getImageUrl());
-        }
-        dailyReportMapper.deleteById(report.getId());
-    }
+   @Transactional
+   public void deleteReport(UUID studentId, LocalDate reportDate) {
+       DailyReport report = dailyReportMapper
+               .findByStudentIdAndReportDate(studentId, reportDate)
+               .orElseThrow(() -> new IllegalArgumentException("日報が見つかりません"));
+       for (ReportImage image : reportImageMapper.findByDailyReportId(report.getId())) {
+           fileStorageService.deleteFile(image.getImageUrl());
+       }
+       dailyReportMapper.deleteById(report.getId());
+   }
 
-    public List<DailyReportListItemResponse> listSubmittedReports(UUID studentId) {
-        return dailyReportMapper.findByStudentId(studentId).stream()
-                .filter(report -> report.getSubmittedAt() != null)
-                .map(report -> new DailyReportListItemResponse(
-                        report.getId(), report.getReportDate(), report.getSubmittedAt()))
-                .toList();
-    }
+   public List<DailyReportListItemResponse> listSubmittedReports(UUID studentId) {
+       return dailyReportMapper.findByStudentId(studentId).stream()
+               .filter(report -> report.getSubmittedAt() != null)
+               .map(report -> new DailyReportListItemResponse(
+                       report.getId(), report.getReportDate(), report.getSubmittedAt()))
+               .toList();
+   }
 
-    private DailyReportDetailResponse toDetailResponse(DailyReport report, UUID studentId) {
-        Map<UUID, ReportItemDefinition> definitionsById = reportItemDefinitionMapper.findByStudentId(studentId).stream()
-                .collect(Collectors.toMap(ReportItemDefinition::getId, definition -> definition));
-        Map<UUID, Subject> subjectsById =
-                subjectMapper.findAll().stream().collect(Collectors.toMap(Subject::getId, subject -> subject));
+   private DailyReportDetailResponse toDetailResponse(DailyReport report, UUID studentId) {
+       Map<UUID, ReportItemDefinition> definitionsById = reportItemDefinitionMapper.findByStudentId(studentId).stream()
+               .collect(Collectors.toMap(ReportItemDefinition::getId, definition -> definition));
+       Map<UUID, ReportItemSubtitle> subtitlesById = reportItemSubtitleMapper.findByStudentId(studentId).stream()
+               .collect(Collectors.toMap(ReportItemSubtitle::getId, subtitle -> subtitle));
+       Map<UUID, Subject> subjectsById =
+               subjectMapper.findAll().stream().collect(Collectors.toMap(Subject::getId, subject -> subject));
 
-        List<ReportItemResponseDTO> items = reportItemResponseMapper.findByDailyReportId(report.getId()).stream()
-                .map(response -> {
-                    ReportItemDefinition definition = definitionsById.get(response.getReportItemDefinitionId());
-                    return new ReportItemResponseDTO(
-                            response.getReportItemDefinitionId(),
-                            definition != null ? definition.getLabel() : null,
-                            response.getChecked());
-                })
-                .toList();
+       List<ReportItemResponseDTO> items = reportItemResponseMapper.findByDailyReportId(report.getId()).stream()
+               .map(response -> {
+                   ReportItemDefinition definition = definitionsById.get(response.getReportItemDefinitionId());
+                   UUID subtitleId = definition != null ? definition.getSubtitleId() : null;
+                   ReportItemSubtitle subtitle = subtitleId != null ? subtitlesById.get(subtitleId) : null;
+                   return new ReportItemResponseDTO(
+                           response.getReportItemDefinitionId(),
+                           definition != null ? definition.getLabel() : null,
+                           response.getChecked(),
+                           subtitleId,
+                           subtitle != null ? subtitle.getLabel() : null);
+               })
+               .toList();
 
-        List<StudyTimeRecordDTO> studyTimes = studyTimeRecordMapper.findByDailyReportId(report.getId()).stream()
-                .map(record -> {
-                    Subject subject = subjectsById.get(record.getSubjectId());
-                    return new StudyTimeRecordDTO(
-                            record.getSubjectId(), subject != null ? subject.getName() : null, record.getMinutes());
-                })
-                .toList();
+       List<StudyTimeRecordDTO> studyTimes = studyTimeRecordMapper.findByDailyReportId(report.getId()).stream()
+               .map(record -> {
+                   Subject subject = subjectsById.get(record.getSubjectId());
+                   return new StudyTimeRecordDTO(
+                           record.getSubjectId(), subject != null ? subject.getName() : null, record.getMinutes());
+               })
+               .toList();
 
-        return new DailyReportDetailResponse(
-                report.getId(),
-                report.getReportDate(),
-                items,
-                studyTimes,
-                report.getFreeText(),
-                report.getSubmittedAt(),
-                report.getCreatedAt(),
-                report.getUpdatedAt());
-    }
+       return new DailyReportDetailResponse(
+               report.getId(),
+               report.getReportDate(),
+               items,
+               studyTimes,
+               report.getFreeText(),
+               report.getSubmittedAt(),
+               report.getCreatedAt(),
+               report.getUpdatedAt());
+   }
 }

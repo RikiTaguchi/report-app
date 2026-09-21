@@ -75,6 +75,7 @@ export default function AdminReportMonitorPage({
           ) : (
             report.items.map((item) => (
               <div key={item.reportItemDefinitionId}>
+                {item.subtitleLabel && <div className="muted" style={{ fontSize: "0.75rem" }}>{item.subtitleLabel}</div>}
                 <div className="label">{item.label}</div>
                 <div>{item.checked ? "チェック済み" : "未チェック"}</div>
               </div>

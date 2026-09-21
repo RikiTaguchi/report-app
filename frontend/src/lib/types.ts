@@ -91,6 +91,8 @@ export interface ReportItemResponseDTO {
   reportItemDefinitionId: string;
   label: string;
   checked: boolean | null;
+  subtitleId: string | null;
+  subtitleLabel: string | null;
 }
 
 export interface StudyTimeRecordDTO {

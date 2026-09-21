@@ -837,6 +837,65 @@ table.data-table {
   line-height: 1;
 }
 
+/* ---------- loading spinner (image tiles, avatar) ---------- */
+
+@keyframes spinner-rotate {
+ to {
+   transform: rotate(360deg);
+ }
+}
+
+.spinner {
+ width: 26px;
+ height: 26px;
+ border-radius: 50%;
+ border: 3px solid var(--border);
+ border-top-color: var(--primary, #4f7cff);
+ animation: spinner-rotate 0.8s linear infinite;
+}
+
+.image-tile-spinner-overlay {
+ position: absolute;
+ inset: 0;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ background: rgba(0, 0, 0, 0.35);
+ z-index: 1;
+}
+
+.image-tile-spinner-overlay .spinner {
+ border-color: rgba(255, 255, 255, 0.35);
+ border-top-color: #fff;
+}
+
+.image-tile-placeholder {
+ background: var(--surface-soft);
+ display: flex;
+ align-items: center;
+ justify-content: center;
+}
+
+.avatar-spinner-overlay {
+ position: absolute;
+ inset: 0;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ background: rgba(0, 0, 0, 0.35);
+ z-index: 1;
+}
+
+.avatar-spinner-overlay .spinner {
+ border-color: rgba(255, 255, 255, 0.35);
+ border-top-color: #fff;
+}
+
+.image-tile .remove-btn:disabled {
+ cursor: not-allowed;
+ opacity: 0.5;
+}
+
 /* ---------- progress bar ---------- */
 
 .progress-bar {
@@ -1856,6 +1915,7 @@ a.ig-story-scroll-item:hover {
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 }
 
 .ig-modal-actions {

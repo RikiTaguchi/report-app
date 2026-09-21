@@ -5,7 +5,17 @@ export const metadata: Metadata = {
   title: "レポートApp 講師",
   description: "明光義塾レポート管理システム",
 
-  manifest: "/teacher/manifest.webmanifest",
+  manifest: "/teacher/manifest",
+
+  icons: {
+    icon: [
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
+  },
 
   appleWebApp: {
     capable: true,
@@ -19,5 +29,10 @@ export default function TeacherLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <TeacherClientLayout>{children}</TeacherClientLayout>;
+  return (
+    <>
+      <meta name="apple-mobile-web-app-capable" content="yes" />
+      <TeacherClientLayout>{children}</TeacherClientLayout>
+    </>
+  );
 }

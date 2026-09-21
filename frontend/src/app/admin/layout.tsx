@@ -5,7 +5,17 @@ export const metadata: Metadata = {
   title: "レポートApp 管理者",
   description: "明光義塾レポート管理システム",
 
-  manifest: "/admin/manifest.webmanifest",
+  manifest: "/admin/manifest",
+
+  icons: {
+    icon: [
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
+  },
 
   appleWebApp: {
     capable: true,
@@ -19,5 +29,10 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <AdminClientLayout>{children}</AdminClientLayout>;
+  return (
+    <>
+      <meta name="apple-mobile-web-app-capable" content="yes" />
+      <AdminClientLayout>{children}</AdminClientLayout>
+    </>
+  );
 }

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ApiError, teacherApi } from "@/lib/api";
+import { convertHeicToJpeg } from "@/lib/image";
 import { useToast } from "@/components/Toast";
 import { Avatar } from "@/components/Avatar";
 
@@ -18,10 +19,20 @@ export function ProfileImageModal({ currentImageUrl, name, onClose, onUpdated }:
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0] ?? null;
-    setFile(selected);
-    setPreviewUrl(selected ? URL.createObjectURL(selected) : null);
+    if (!selected) {
+      setFile(null);
+      setPreviewUrl(null);
+      return;
+    }
+    // HEIC はそのままではプレビューできない端末があるため JPEG に変換してから保持
+    const converted = await convertHeicToJpeg(selected);
+    setFile(converted);
+    setPreviewUrl((previous) => {
+      if (previous) URL.revokeObjectURL(previous);
+      return URL.createObjectURL(converted);
+    });
   };
 
   const handleSave = async () => {

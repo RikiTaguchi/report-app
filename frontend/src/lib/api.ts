@@ -43,6 +43,7 @@ import type {
   TeacherResponse,
   TeacherUpdateRequest,
 } from "./types";
+import { convertHeicToJpeg } from "./image";
 
 function resolveApiBaseUrl(): string {
   const configured =
@@ -143,8 +144,10 @@ async function upload<T>(path: string, file: File): Promise<T> {
   const headers: Record<string, string> = {};
   if (token) headers["X-XSRF-TOKEN"] = token;
 
+  const uploadFile = await convertHeicToJpeg(file);
+
   const formData = new FormData();
-  formData.append("file", file);
+  formData.append("file", uploadFile);
 
   const response = await fetch(apiUrl(path), {
     method: "POST",

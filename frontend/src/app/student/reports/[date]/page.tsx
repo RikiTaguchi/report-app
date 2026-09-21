@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { studentApi, ApiError, resolveFileUrl } from "@/lib/api";
+import { convertHeicToJpeg } from "@/lib/image";
 import { ListIcon, TargetIcon, PlusIcon, DocumentIcon } from "@/components/icons";
 import { useToast } from "@/components/Toast";
 import type {
@@ -289,13 +290,15 @@ export default function StudentReportDetail() {
     }
   };
 
-  const handleImageUpload = (file: File) => {
+  const handleImageUpload = async (file: File) => {
     if (images.length + pendingImages.length >= MAX_IMAGES) {
       showToast(`画像は最大${MAX_IMAGES}枚までです`, "error");
       return;
     }
-    const previewUrl = URL.createObjectURL(file);
-    setPendingImages([...pendingImages, { key: crypto.randomUUID(), file, previewUrl }]);
+    // HEIC はそのままではプレビューできない端末があるため JPEG に変換してから保持
+    const converted = await convertHeicToJpeg(file);
+    const previewUrl = URL.createObjectURL(converted);
+    setPendingImages([...pendingImages, { key: crypto.randomUUID(), file: converted, previewUrl }]);
   };
 
   const handleRemovePendingImage = (key: string) => {
@@ -554,7 +557,7 @@ export default function StudentReportDetail() {
                   accept="image/*"
                   onChange={(e) => {
                     if (e.target.files?.[0]) {
-                      handleImageUpload(e.target.files[0]);
+                      void handleImageUpload(e.target.files[0]);
                       e.target.value = "";
                     }
                   }}

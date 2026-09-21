@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { BLOG_MAX_IMAGES, TeacherBlogForm } from "@/components/TeacherBlogForm";
 import { teacherApi, ApiError, resolveFileUrl } from "@/lib/api";
+import { convertHeicToJpeg } from "@/lib/image";
 import type { BlogImageResponse, BlogResponse } from "@/lib/types";
 
 interface Params {
@@ -69,7 +70,7 @@ export default function EditBlogPage({ params }: { params: Promise<Params> }) {
       setError(null);
       const uploaded: BlogImageResponse[] = [];
       for (const file of selected) {
-        uploaded.push(await teacherApi.uploadBlogImage(blogId, file));
+        uploaded.push(await teacherApi.uploadBlogImage(blogId, await convertHeicToJpeg(file)));
       }
       setImages((current) => [...current, ...uploaded]);
     } catch (err) {

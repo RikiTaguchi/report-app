@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BLOG_MAX_IMAGES, TeacherBlogForm } from "@/components/TeacherBlogForm";
 import { teacherApi, ApiError } from "@/lib/api";
+import { convertHeicToJpeg } from "@/lib/image";
 
 export default function NewBlogPage() {
   const router = useRouter();
@@ -28,7 +29,10 @@ export default function NewBlogPage() {
       return;
     }
     setError(null);
-    setImages((current) => [...current, ...selected]);
+    // HEIC はそのままではプレビューできない端末があるため JPEG に変換してから保持
+    void Promise.all(selected.map((file) => convertHeicToJpeg(file))).then((converted) => {
+      setImages((current) => [...current, ...converted]);
+    });
   }
 
   async function handleCreate() {

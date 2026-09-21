@@ -9,6 +9,8 @@ services:
       APP_CORS_ALLOWED_ORIGINS: https://meikoreport.com,https://www.meikoreport.com
     ports:
       - "8080:8080"
+    volumes:
+      - ./uploads:/app/uploads
     restart: always
 
   frontend:
@@ -23,6 +25,3 @@ services:
     depends_on:
       - backend
     restart: always
-
-volumes:
-  uploads:

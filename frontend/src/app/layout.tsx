@@ -1,11 +1,16 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-// ↓追加：AuthContextからAuthProviderをインポート
 import { AuthProvider } from "@/context/AuthContext";
 
 export const metadata: Metadata = {
   title: "レポートApp",
   description: "明光義塾レポート管理システム",
+
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "レポートApp",
+  },
 };
 
 export const viewport: Viewport = {
@@ -23,7 +28,6 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body>
-        {/* ↓追加：children を AuthProvider で包む */}
         <AuthProvider>
           {children}
         </AuthProvider>

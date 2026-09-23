@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { adminApi, ApiError } from "@/lib/api";
+import { Avatar } from "@/components/Avatar";
 import type {
   DailyReportListItemResponse,
   GoalProgressCreateRequest,
@@ -139,7 +140,15 @@ export default function AdminStudentDetailPage({
   return (
     <div className="page">
       <div className="page-header">
-        <h1>{student.name}</h1>
+        <div className="row" style={{ gap: 12 }}>
+          <Avatar
+            src={student.profileImageUrl}
+            name={student.name}
+            photoClassName="ig-avatar-photo"
+            textClassName="ig-avatar"
+          />
+          <h1>{student.name}</h1>
+        </div>
         <Link href="/admin/students" className="btn btn-ghost btn-sm">一覧へ戻る</Link>
       </div>
       {error && <div className="alert alert-error">{error}</div>}

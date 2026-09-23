@@ -155,7 +155,12 @@ public class DailyReportService {
            messagingTemplate.convertAndSend(
                    RealtimeTopics.REPORT_SUBMISSIONS,
                    new ReportSubmittedEvent(
-                           studentId, student.getName(), student.getTeacherId(), reportDate, submittedAt));
+                           studentId,
+                           student.getName(),
+                           student.getProfileImageUrl(),
+                           student.getTeacherId(),
+                           reportDate,
+                           submittedAt));
        }
 
        UUID dailyReportId = report.getId();

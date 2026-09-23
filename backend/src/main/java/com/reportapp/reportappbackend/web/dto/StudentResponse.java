@@ -11,6 +11,7 @@ public record StudentResponse(
         String firstName,
         UUID teacherId,
         String teacherName,
+        String profileImageUrl,
         LocalDateTime createdAt,
         LocalDateTime updatedAt) {
 }

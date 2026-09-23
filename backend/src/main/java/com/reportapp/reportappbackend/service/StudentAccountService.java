@@ -122,6 +122,7 @@ public class StudentAccountService {
                 student.getFirstName(),
                 student.getTeacherId(),
                 teacherName,
+                student.getProfileImageUrl(),
                 student.getCreatedAt(),
                 student.getUpdatedAt());
     }

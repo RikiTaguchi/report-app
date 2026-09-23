@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { adminApi, ApiError } from "@/lib/api";
+import { Avatar } from "@/components/Avatar";
 import type { StudentResponse } from "@/lib/types";
 
 const FLASH: Record<string, string> = {
@@ -58,9 +59,17 @@ export default function AdminStudentsPage() {
               {students.map((student) => (
                 <tr key={student.id}>
                   <td>
-                    <Link className="admin-muted-link" href={`/admin/students/${student.id}`}>
-                      {student.name}
-                    </Link>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <Avatar
+                        src={student.profileImageUrl}
+                        name={student.name}
+                        photoClassName="ig-avatar-sm-photo"
+                        textClassName="ig-avatar-sm"
+                      />
+                      <Link className="admin-muted-link" href={`/admin/students/${student.id}`}>
+                        {student.name}
+                      </Link>
+                    </div>
                   </td>
                   <td>{student.username}</td>
                   <td>{student.teacherName ?? "未設定"}</td>

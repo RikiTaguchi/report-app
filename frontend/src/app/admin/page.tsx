@@ -4,11 +4,13 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { adminApi, ApiError } from "@/lib/api";
 import { subscribeTopic, REPORT_SUBMISSIONS_TOPIC } from "@/lib/ws";
+import { Avatar } from "@/components/Avatar";
 import type { TeacherResponse, StudentResponse, BlogResponse, ReportSubmittedEvent } from "@/lib/types";
 
 interface RecentReport {
   studentId: string;
   studentName: string;
+  studentProfileImageUrl: string | null;
   reportDate: string;
   submittedAt: string | null;
 }
@@ -47,6 +49,7 @@ export default function AdminHomePage() {
               .map((report) => ({
                 studentId: student.id,
                 studentName: student.name,
+                studentProfileImageUrl: student.profileImageUrl,
                 reportDate: report.reportDate,
                 submittedAt: report.submittedAt,
               }));
@@ -110,9 +113,17 @@ export default function AdminHomePage() {
                   return (
                     <tr key={`${row.studentId}-${row.reportDate}`}>
                       <td>
-                        <Link className="admin-muted-link" href={href}>
-                          {row.studentName}
-                        </Link>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                          <Avatar
+                            src={row.studentProfileImageUrl}
+                            name={row.studentName}
+                            photoClassName="ig-avatar-sm-photo"
+                            textClassName="ig-avatar-sm"
+                          />
+                          <Link className="admin-muted-link" href={href}>
+                            {row.studentName}
+                          </Link>
+                        </div>
                       </td>
                       <td>
                         <Link className="admin-muted-link" href={href}>

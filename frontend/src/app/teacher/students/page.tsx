@@ -29,6 +29,7 @@ export default function TeacherStudentsIndexPage() {
                   ...report,
                   studentId: student.id,
                   studentName: student.name,
+                  studentProfileImageUrl: student.profileImageUrl,
                 }));
             })
           )
@@ -95,6 +96,7 @@ export default function TeacherStudentsIndexPage() {
                 <div className="ig-story-avatar-ring">
                   <div className="ig-story-avatar">
                     <Avatar
+                      src={student.profileImageUrl}
                       name={student.name}
                       photoClassName="ig-story-avatar-photo"
                       textClassName="ig-story-avatar-inner"

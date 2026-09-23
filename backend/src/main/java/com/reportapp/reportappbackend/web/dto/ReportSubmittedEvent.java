@@ -5,5 +5,10 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record ReportSubmittedEvent(
-        UUID studentId, String studentName, UUID teacherId, LocalDate reportDate, LocalDateTime submittedAt) {
+        UUID studentId,
+        String studentName,
+        String studentProfileImageUrl,
+        UUID teacherId,
+        LocalDate reportDate,
+        LocalDateTime submittedAt) {
 }

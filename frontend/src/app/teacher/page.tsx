@@ -11,6 +11,7 @@ import type { DailyReportListItemResponse, ReportSubmittedEvent, StudentResponse
 interface ReportRow extends DailyReportListItemResponse {
   studentId: string;
   studentName: string;
+  studentProfileImageUrl: string | null;
 }
 
 function compareNewest(a: ReportRow, b: ReportRow): number {
@@ -44,6 +45,7 @@ export default function TeacherPage() {
                   ...report,
                   studentId: student.id,
                   studentName: student.name,
+                  studentProfileImageUrl: student.profileImageUrl,
                 }));
             })
           )

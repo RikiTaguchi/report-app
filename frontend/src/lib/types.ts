@@ -171,6 +171,7 @@ export interface CommentEvent<T> {
 export interface ReportSubmittedEvent {
   studentId: string;
   studentName: string;
+  studentProfileImageUrl: string | null;
   teacherId: string | null;
   reportDate: string;
   submittedAt: string;
@@ -340,6 +341,7 @@ export interface StudentResponse {
   firstName: string;
   teacherId: string | null;
   teacherName: string | null;
+  profileImageUrl: string | null;
   createdAt: string;
   updatedAt: string;
 }

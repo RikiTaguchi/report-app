@@ -386,7 +386,7 @@ export default function TeacherStudentInfoPage({ params }: { params: Promise<Par
 
       <div className="ig-profile-top">
         <div className="ig-profile-avatar-lg">
-          <Avatar name={student?.name} photoClassName="ig-profile-avatar-lg-photo" />
+          <Avatar src={student?.profileImageUrl} name={student?.name} photoClassName="ig-profile-avatar-lg-photo" />
         </div>
         <div className="ig-profile-stats">
           <div className="ig-profile-stat">

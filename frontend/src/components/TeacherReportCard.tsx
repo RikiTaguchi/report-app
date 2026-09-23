@@ -22,6 +22,7 @@ import type {
 export interface TeacherReportFeedItem extends DailyReportListItemResponse {
  studentId: string;
  studentName: string;
+ studentProfileImageUrl: string | null;
  detail: DailyReportDetailResponse | null;
  images: ReportImageResponse[];
  comments: ReportCommentResponse[];
@@ -191,7 +192,7 @@ export function TeacherReportCard({ report }: { report: TeacherReportFeedItem })
          className="ig-avatar"
          aria-label={`${report.studentName}さんの生徒詳細を表示`}
        >
-         <Avatar name={report.studentName} photoClassName="ig-avatar-photo" />
+         <Avatar src={report.studentProfileImageUrl} name={report.studentName} photoClassName="ig-avatar-photo" />
        </Link>
        <div className="ig-card-header-main">
          <div className="ig-card-header-title">

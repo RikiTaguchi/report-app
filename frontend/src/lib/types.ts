@@ -182,6 +182,7 @@ export interface BlogResponse {
   id: string;
   teacherId: string;
   teacherName: string | null;
+  teacherProfileImageUrl: string | null;
   title: string;
   content: string;
   createdAt: string;
@@ -209,6 +210,7 @@ export interface BlogCommentResponse {
   authorType: ActorType;
   authorId: string;
   authorName: string | null;
+  authorProfileImageUrl: string | null;
   content: string;
   parentCommentId: string | null;
   createdAt: string;

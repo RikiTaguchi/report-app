@@ -13,6 +13,7 @@ import com.reportapp.reportappbackend.web.dto.BlogCreateRequest;
 import com.reportapp.reportappbackend.web.dto.BlogResponse;
 import com.reportapp.reportappbackend.web.dto.BlogUpdateRequest;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -138,10 +139,9 @@ public class BlogService {
     }
 
     private BlogResponse toResponse(Blog blog, ActorType actorType, UUID actorId) {
-        String teacherName = teacherMapper
-                .findById(blog.getTeacherId())
-                .map(Teacher::getName)
-                .orElse(null);
+        Optional<Teacher> author = teacherMapper.findById(blog.getTeacherId());
+        String teacherName = author.map(Teacher::getName).orElse(null);
+        String teacherProfileImageUrl = author.map(Teacher::getProfileImageUrl).orElse(null);
         int likeCount = blogLikeMapper.countByBlogId(blog.getId());
         int commentCount = blogCommentMapper.countByBlogId(blog.getId());
         boolean likedByMe = actorType != null
@@ -150,6 +150,7 @@ public class BlogService {
                 blog.getId(),
                 blog.getTeacherId(),
                 teacherName,
+                teacherProfileImageUrl,
                 blog.getTitle(),
                 blog.getContent(),
                 blog.getCreatedAt(),

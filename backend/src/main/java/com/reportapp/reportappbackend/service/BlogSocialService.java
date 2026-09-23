@@ -20,6 +20,7 @@ import com.reportapp.reportappbackend.web.dto.ReportLikeCountResponse;
 import com.reportapp.reportappbackend.web.dto.ReportLikeStatusResponse;
 import com.reportapp.reportappbackend.websocket.RealtimeTopics;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -228,23 +229,28 @@ public class BlogSocialService {
     }
 
     private BlogCommentResponse toCommentResponse(BlogComment comment) {
-        String authorName =
-                switch (comment.getAuthorType()) {
-                    case TEACHER -> teacherMapper
-                            .findById(comment.getAuthorId())
-                            .map(Teacher::getName)
-                            .orElse(null);
-                    case STUDENT -> studentMapper
-                            .findById(comment.getAuthorId())
-                            .map(Student::getName)
-                            .orElse(null);
-                };
+        String authorName;
+        String authorProfileImageUrl;
+        switch (comment.getAuthorType()) {
+            case TEACHER -> {
+                Optional<Teacher> author = teacherMapper.findById(comment.getAuthorId());
+                authorName = author.map(Teacher::getName).orElse(null);
+                authorProfileImageUrl = author.map(Teacher::getProfileImageUrl).orElse(null);
+            }
+            case STUDENT -> {
+                Optional<Student> author = studentMapper.findById(comment.getAuthorId());
+                authorName = author.map(Student::getName).orElse(null);
+                authorProfileImageUrl = author.map(Student::getProfileImageUrl).orElse(null);
+            }
+            default -> throw new IllegalStateException("不明な投稿者種別です");
+        }
         return new BlogCommentResponse(
                 comment.getId(),
                 comment.getBlogId(),
                 comment.getAuthorType().name(),
                 comment.getAuthorId(),
                 authorName,
+                authorProfileImageUrl,
                 comment.getContent(),
                 comment.getParentCommentId(),
                 comment.getCreatedAt(),

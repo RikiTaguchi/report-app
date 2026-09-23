@@ -24,7 +24,6 @@ export interface TeacherBlogFeedItem {
   images: BlogImageResponse[];
   comments: BlogCommentResponse[];
   likeStatus: ReportLikeStatusResponse;
-  authorProfileImageUrl: string | null;
 }
 
 function formatDate(dateStr: string): string {
@@ -165,7 +164,7 @@ export function TeacherBlogCard({
       <div className="ig-card-header ig-report-card-header">
         <Link href={profileHref} className="ig-avatar" aria-label={`${authorName}のプロフィール`}>
           <Avatar
-            src={item.authorProfileImageUrl}
+            src={blog.teacherProfileImageUrl}
             name={authorName}
             photoClassName="ig-avatar-photo"
           />
@@ -245,7 +244,11 @@ export function TeacherBlogCard({
               comments.map((comment) => (
                 <div key={comment.id} className="ig-comment-row-with-avatar">
                   <div className="ig-avatar-sm">
-                    <Avatar name={comment.authorName} photoClassName="ig-avatar-sm-photo" />
+                    <Avatar
+                      src={comment.authorProfileImageUrl}
+                      name={comment.authorName}
+                      photoClassName="ig-avatar-sm-photo"
+                    />
                   </div>
                   {editingCommentId === comment.id ? (
                     <div className="ig-comment-row-main">

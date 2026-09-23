@@ -27,7 +27,6 @@ export default function BlogsPage() {
           teacherApi.listTeachers(),
         ]);
         const sorted = [...published].sort(compareNewest);
-        const teacherById = new Map(teacherList.map((teacher) => [teacher.id, teacher]));
         const feedItems = await Promise.all(
           sorted.map(async (blog) => {
             try {
@@ -36,20 +35,13 @@ export default function BlogsPage() {
                 teacherApi.listBlogComments(blog.id),
                 teacherApi.getBlogLikeStatus(blog.id),
               ]);
-              return {
-                blog,
-                images,
-                comments,
-                likeStatus,
-                authorProfileImageUrl: teacherById.get(blog.teacherId)?.profileImageUrl ?? null,
-              };
+              return { blog, images, comments, likeStatus };
             } catch {
               return {
                 blog,
                 images: [],
                 comments: [],
                 likeStatus: { liked: false, count: 0 },
-                authorProfileImageUrl: teacherById.get(blog.teacherId)?.profileImageUrl ?? null,
               };
             }
           })

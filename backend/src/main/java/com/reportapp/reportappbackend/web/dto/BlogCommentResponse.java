@@ -9,6 +9,7 @@ public record BlogCommentResponse(
         String authorType,
         UUID authorId,
         String authorName,
+        String authorProfileImageUrl,
         String content,
         UUID parentCommentId,
         LocalDateTime createdAt,

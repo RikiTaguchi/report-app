@@ -5,6 +5,7 @@ import { studentApi, ApiError } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/components/Toast";
 import { ImageCarousel } from "@/components/ImageCarousel";
+import { Avatar } from "@/components/Avatar";
 import { HeartIcon, ChatIcon } from "@/components/icons";
 import type {
   BlogCommentResponse,
@@ -131,7 +132,12 @@ export default function StudentBlogsList() {
                 <div key={teacher.id} className="ig-story-scroll-item">
                   <div className="ig-story-avatar-ring">
                     <div className="ig-story-avatar">
-                      <div className="ig-story-avatar-inner">{teacher.name?.slice(0, 1) ?? "?"}</div>
+                      <Avatar
+                        src={teacher.profileImageUrl}
+                        name={teacher.name}
+                        textClassName="ig-story-avatar-inner"
+                        photoClassName="ig-story-avatar-photo"
+                      />
                     </div>
                   </div>
                   <div className="ig-story-scroll-item-label">{teacher.name}</div>
@@ -156,7 +162,13 @@ export default function StudentBlogsList() {
             return (
               <div key={blog.id} className="ig-card">
                 <div className="ig-card-header">
-                  <div className="ig-avatar">{blog.teacherName?.slice(0, 1) ?? "?"}</div>
+                  <div className="ig-avatar">
+                    <Avatar
+                      src={blog.teacherProfileImageUrl}
+                      name={blog.teacherName}
+                      photoClassName="ig-avatar-photo"
+                    />
+                  </div>
                   <div className="ig-card-header-main">
                     <div className="ig-card-header-title">{blog.title}</div>
                     <div className="ig-card-header-sub">
@@ -234,7 +246,13 @@ export default function StudentBlogsList() {
                             .map((comment) => (
                               <div key={comment.id}>
                                 <div className="ig-comment-row-with-avatar">
-                                  <div className="ig-avatar-sm">{comment.authorName?.slice(0, 1) ?? "?"}</div>
+                                  <div className="ig-avatar-sm">
+                                    <Avatar
+                                      src={comment.authorProfileImageUrl}
+                                      name={comment.authorName}
+                                      photoClassName="ig-avatar-sm-photo"
+                                    />
+                                  </div>
                                   <div className="ig-comment-row-main">
                                     <div className="ig-comment-text-line">
                                       <span className="ig-comment-author">{comment.authorName}</span>{" "}
@@ -250,7 +268,13 @@ export default function StudentBlogsList() {
                                       .filter((c) => c.parentCommentId === comment.id)
                                       .map((reply) => (
                                         <div key={reply.id} className="ig-comment-row-with-avatar">
-                                          <div className="ig-avatar-sm">{reply.authorName?.slice(0, 1) ?? "?"}</div>
+                                          <div className="ig-avatar-sm">
+                                            <Avatar
+                                              src={reply.authorProfileImageUrl}
+                                              name={reply.authorName}
+                                              photoClassName="ig-avatar-sm-photo"
+                                            />
+                                          </div>
                                           <div className="ig-comment-row-main">
                                             <div className="ig-comment-text-line">
                                               <span className="ig-comment-author">{reply.authorName}</span>{" "}
@@ -268,7 +292,9 @@ export default function StudentBlogsList() {
                       )}
 
                       <div className="ig-comment-form">
-                        <div className="ig-avatar-sm">{user?.name?.slice(0, 1) ?? "?"}</div>
+                        <div className="ig-avatar-sm">
+                          <Avatar src={user?.profileImageUrl} name={user?.name} photoClassName="ig-avatar-sm-photo" />
+                        </div>
                         <textarea
                           className="textarea"
                           placeholder="生徒はコメントできません（閲覧のみ）"

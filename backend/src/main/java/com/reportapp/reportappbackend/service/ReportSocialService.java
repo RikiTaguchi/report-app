@@ -274,8 +274,9 @@ public class ReportSocialService {
         String authorProfileImageUrl;
         switch (comment.getAuthorType()) {
             case TEACHER -> {
-                authorName = teacherMapper.findById(comment.getAuthorId()).map(Teacher::getName).orElse(null);
-                authorProfileImageUrl = null;
+                Optional<Teacher> author = teacherMapper.findById(comment.getAuthorId());
+                authorName = author.map(Teacher::getName).orElse(null);
+                authorProfileImageUrl = author.map(Teacher::getProfileImageUrl).orElse(null);
             }
             case STUDENT -> {
                 Optional<Student> author = studentMapper.findById(comment.getAuthorId());

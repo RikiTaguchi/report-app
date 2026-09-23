@@ -7,6 +7,7 @@ public record BlogResponse(
         UUID id,
         UUID teacherId,
         String teacherName,
+        String teacherProfileImageUrl,
         String title,
         String content,
         LocalDateTime createdAt,
